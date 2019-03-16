@@ -1,0 +1,14 @@
+{
+  "name": "lighting-tools",
+  "version": "1.0.0",
+  "description": "A set of tools for light techs.",
+  "main": "index.js",
+  "author": "Joonas Nordlund <jonaz92@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "elm-live": "^3.4.0"
+  },
+  "scripts": {
+    "dev": "elm-live src/elm/Main.elm --dir=./dist -- --output dist/elm.js --debug"
+  }
+}
