@@ -9,6 +9,10 @@
     "elm-live": "^3.4.0"
   },
   "scripts": {
-    "dev": "elm-live src/elm/Main.elm --dir=./dist -- --output dist/elm.js --debug"
+    "dev": "elm-live src/elm/Main.elm --dir=./dist -- --output dist/elm.js --debug",
+    "prebuild": "rm -rf dist/ && mkdir dist/",
+    "build": "yarn build:elm && yarn build:public",
+    "build:elm": "elm make src/elm/Main.elm --output dist/elm.js",
+    "build:public": "cp -r public/* dist/"
   }
 }
