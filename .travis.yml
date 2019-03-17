@@ -1,0 +1,16 @@
+language: elm
+before_deploy: yarn build
+stages:
+  - name: deploy
+    if: branch = master
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  on:
+    branch: master
+  repo: voiceinsidehead/voiceinsidehead.github.io
+  target_branch: master
+  local-dir: dist
+  committer-from-gh: true

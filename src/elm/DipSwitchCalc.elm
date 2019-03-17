@@ -1,4 +1,4 @@
-module DipSwitchCalc exposing (dipSwitchCalc, validAddress)
+module DipSwitchCalc exposing (convertBinaryToInt, convertIntToBinary, dipSwitchCalc, validAddress)
 
 import Array exposing (Array)
 import Element exposing (Color, Element, fill, maximum, minimum, shrink)
