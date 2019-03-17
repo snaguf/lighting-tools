@@ -1,10 +1,11 @@
-module DipSwitchCalc exposing (Binary, convertBinaryToInt, convertIntToBinary, dipSwitchView, zeroBinary)
+module DipSwitchCalc exposing (dipSwitchCalc, validAddress)
 
 import Array exposing (Array)
 import Element exposing (Color, Element, fill, maximum, minimum, shrink)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Input as Input
+import Html.Attributes as Attributes
 
 
 type Bit
@@ -13,11 +14,6 @@ type Bit
 
 type Binary
     = Binary (List Bit)
-
-
-zeroBinary : Binary
-zeroBinary =
-    Binary <| List.repeat 10 (Bit False)
 
 
 convertBinaryToInt : Binary -> Int
@@ -94,13 +90,14 @@ dipView msg ix bit =
             }
 
 
-dipSwitchView : (Binary -> msg) -> Binary -> Element msg
-dipSwitchView msg binary =
+dipSwitchView : (Int -> msg) -> Int -> Element msg
+dipSwitchView msg address =
     let
         mappedMessage =
-            mapBinaryMessage msg binary
+            mapBinaryMessage msg (convertIntToBinary address)
     in
-    binary
+    address
+        |> convertIntToBinary
         |> unwrapBinary
         |> List.indexedMap (dipView mappedMessage)
         |> List.reverse
@@ -108,12 +105,21 @@ dipSwitchView msg binary =
         |> Element.row [ Element.spacing 10, Element.padding 10 ]
 
 
-updateBinary : Int -> Bit -> Binary -> Binary
+dipSwitchCalc : (Int -> msg) -> Int -> Element msg
+dipSwitchCalc msg address =
+    Element.column [ Element.centerX ]
+        [ dipSwitchView msg address
+        , numberView msg address
+        ]
+
+
+updateBinary : Int -> Bit -> Binary -> Int
 updateBinary ix bit binary =
     binary
         |> unwrapBinary
         |> updateInIndex ix bit
         |> Binary
+        |> convertBinaryToInt
 
 
 updateInIndex : Int -> a -> List a -> List a
@@ -128,7 +134,7 @@ updateInIndex ix a list =
     head ++ [ a ] ++ tail
 
 
-mapBinaryMessage : (Binary -> msg) -> Binary -> (Int -> Bool -> msg)
+mapBinaryMessage : (Int -> msg) -> Binary -> (Int -> Bool -> msg)
 mapBinaryMessage f binary =
     \ix value -> f (updateBinary ix (Bit value) binary)
 
@@ -165,6 +171,44 @@ bitIcon on =
         , Border.width 2
         ]
         switch
+
+
+numberView : (Int -> msg) -> Int -> Element msg
+numberView msg num =
+    let
+        inputText =
+            if num < 0 then
+                ""
+
+            else
+                String.fromInt num
+    in
+    Input.text ([] ++ numericAttributes)
+        { label = Input.labelHidden "DMX Address"
+        , onChange = mapInputMessage msg
+        , placeholder = Nothing
+        , text = inputText
+        }
+
+
+mapInputMessage : (Int -> msg) -> (String -> msg)
+mapInputMessage msg =
+    \str -> msg <| Maybe.withDefault 0 <| String.toInt str
+
+
+validAddress : Int -> Bool
+validAddress value =
+    not <| (value > 512 || value < 0)
+
+
+{-| Attributes for input to use numeric keyboard on iOS.
+-}
+numericAttributes : List (Element.Attribute msg)
+numericAttributes =
+    [ Element.htmlAttribute <| Attributes.pattern "[0-9]*"
+    , Element.htmlAttribute <| Attributes.attribute "inputmode" "numeric"
+    , Element.htmlAttribute <| Attributes.type_ "number"
+    ]
 
 
 red : Color

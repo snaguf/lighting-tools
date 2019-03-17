@@ -1,0 +1,8 @@
+{
+  "name": "Lighting Tools",
+  "short_name": "LTools",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Set of tools for lighting techs."
+}
